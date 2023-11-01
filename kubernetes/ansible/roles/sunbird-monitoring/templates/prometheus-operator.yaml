@@ -49,10 +49,16 @@ alertmanager_spec_overrides: &alertmanager_spec_overrides
 # Enabling external prometheus scrape config
 prometheus:
   prometheusSpec:
+    additionalScrapeConfigsSecret:
+      enabled: true
+      name: {{ fullnameOverride }}-prometheus-scrape-confg
+      key: additional-scrape-configs.yaml
     thanos:
+      objectStorageConfig: false
       version: {{ thanos_sidecar_version | d('v0.11.0') }}
     additionalScrapeConfigsExternal: true
     retention: "{{ prometheus_retention_time | d('90d') }}"
+    
     externalLabels:
       cluster: "{{ kubernetes_cluster_name | default('kubernetes-1')}}" # this label will deprecate in release-3.4.0
       env: "{{ env }}" # this label will deprecate in release-3.4.0
