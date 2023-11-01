@@ -54,7 +54,8 @@ prometheus:
       name: {{ fullnameOverride }}-prometheus-scrape-confg
       key: additional-scrape-configs.yaml
     thanos:
-      objectStorageConfig: false
+      objectStorageConfig:
+        enabled: false
       version: {{ thanos_sidecar_version | d('v0.11.0') }}
     additionalScrapeConfigsExternal: true
     retention: "{{ prometheus_retention_time | d('90d') }}"
