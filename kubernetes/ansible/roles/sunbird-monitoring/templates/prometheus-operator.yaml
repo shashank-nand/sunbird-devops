@@ -57,7 +57,7 @@ prometheus:
       objectStorageConfig:
         enabled: false
       version: {{ thanos_sidecar_version | d('v0.11.0') }}
-    additionalScrapeConfigsExternal: true
+    additionalScrapeConfigsExternal: false
     retention: "{{ prometheus_retention_time | d('90d') }}"
     
     externalLabels:
