@@ -15,6 +15,77 @@ scrapeconfig:
   #   prometheus.io/port: "2020"
   #   prometheus.io/path: /api/v1/metrics/prometheus
   #
+  - job_name: staging/statsd-exporter/0
+       honor_labels: true
+  kubernetes_sd_configs:
+  - role: endpoints
+    namespaces:
+      names:
+      - staging
+  scrape_interval: 30s
+  scrape_timeout: 10s
+  metrics_path: /metrics
+  scheme: http
+  relabel_configs:
+  - action: keep
+    source_labels:
+    - __meta_kubernetes_service_label_app_kubernetes_io_instance
+    regex: statsd-exporter
+  - action: keep
+    source_labels:
+    - __meta_kubernetes_service_label_app_kubernetes_io_managed_by
+    regex: Helm
+  - action: keep
+    source_labels:
+    - __meta_kubernetes_service_label_app_kubernetes_io_name
+    regex: statsd-exporter
+  - action: keep
+    source_labels:
+    - __meta_kubernetes_service_label_app_kubernetes_io_version
+    regex: 1.16.0
+  - action: keep
+    source_labels:
+    - __meta_kubernetes_service_label_helm_sh_chart
+    regex: statsd-exporter-0.1.0
+  - action: keep
+    source_labels:
+    - __meta_kubernetes_endpoint_port_name
+    regex: http
+  - source_labels:
+    - __meta_kubernetes_endpoint_address_target_kind
+    - __meta_kubernetes_endpoint_address_target_name
+    separator: ;
+    regex: Node;(.*)
+    replacement: ${1}
+    target_label: node
+  - source_labels:
+    - __meta_kubernetes_endpoint_address_target_kind
+    - __meta_kubernetes_endpoint_address_target_name
+    separator: ;
+    regex: Pod;(.*)
+    replacement: ${1}
+    target_label: pod
+  - source_labels:
+    - __meta_kubernetes_namespace
+    target_label: namespace
+  - source_labels:
+    - __meta_kubernetes_service_name
+    target_label: service
+  - source_labels:
+    - __meta_kubernetes_pod_name
+    target_label: pod
+  - source_labels:
+    - __meta_kubernetes_service_name
+    target_label: job
+    replacement: ${1}
+  - source_labels:
+    - __meta_kubernetes_service_label_statsd_exporter
+    target_label: job
+    regex: (.+)
+    replacement: ${1}
+  - target_label: endpoint
+    replacement: http
+    
   - job_name: 'kubernetes-service-endpoints'
     kubernetes_sd_configs:
     - role: endpoints
